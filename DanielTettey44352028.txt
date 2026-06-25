@@ -1,0 +1,314 @@
+Name: Daniel Oko Tettey
+ID: 44352028
+Cohort: B
+
+CREATE DATABASE Projects;
+USE Projects;
+
+CREATE TABLE Employee (
+	empNo VARCHAR(5) PRIMARY KEY,
+	fName VARCHAR(20),
+	lName VARCHAR(20), 
+	address VARCHAR(30),
+	DOB DATE,
+	sex VARCHAR(10),
+	position VARCHAR(15),
+	deptNo VARCHAR(5),
+	
+	CONSTRAINT chk_sex CHECK(sex IN ("M", "F")),	
+	CONSTRAINT chk_position CHECK(position IN ("Manager", "Team Leader", "Analyst", "Software Developer"))
+);
+
+CREATE TABLE Department (
+	deptNo VARCHAR(5) PRIMARY KEY,
+	deptName VARCHAR(20),
+	mgrEmpNo VARCHAR (5)
+);
+
+CREATE TABLE Project (
+	projNo VARCHAR(5) PRIMARY KEY,
+	projName VARCHAR(20),
+	deptNo VARCHAR(5),
+	
+	CONSTRAINT fk_deptNo
+	FOREIGN KEY (deptNo)
+	REFERENCES Department(deptNo)
+);
+
+CREATE TABLE WorksOn (
+	empNo VARCHAR(5),
+	projNo VARCHAR(5),
+	dateWorked DATE,
+	hoursWorked INT(3),
+	
+	CONSTRAINT pkWorksOn
+	PRIMARY KEY(empNo, projNo, dateWorked),
+	
+	CONSTRAINT fk_empNo
+	FOREIGN KEY (empNo)
+	REFERENCES Employee(empNo),
+	
+	CONSTRAINT fk_projNo
+	FOREIGN KEY (projNo)
+	REFERENCES Project(projNo)
+);
+
+ALTER TABLE Employee 
+ADD CONSTRAINT fk_EmpDept
+FOREIGN KEY (deptNo)
+REFERENCES Department(deptNo);
+
+ALTER TABLE WorksOn
+ADD CONSTRAINT chk_hoursW CHECK(hoursWorked >0 AND hoursWorked <= 40);
+
+ALTER TABLE Department
+ADD CONSTRAINT fk_mgEmpNo
+FOREIGN KEY (mgrEmpNo)
+REFERENCES Employee(empNo);
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+INSERT INTO Department (deptNo, deptName, mgrEmpNo) VALUES
+('D0001', 'Frontend Dev', 'E0001'),
+('D0002', 'Backend Dev', 'E0002'),
+('D0003', 'Database Admin', 'E0003'),
+('D0004', 'QA Testing', 'E0001'),
+('D0005', 'UI/UX Design', 'E0002'),
+('D0006', 'Cloud Ops', 'E0003'),
+('D0007', 'Data Science', 'E0001'),
+('D0008', 'Cybersecurity', 'E0002'),
+('D0009', 'Tech Support', 'E0003'),
+('D0010', 'R&D', 'E0001');
+
+SELECT * FROM Department;
+
++--------+----------------+----------+
+| deptNo | deptName       | mgrEmpNo |
++--------+----------------+----------+
+| D0001  | Frontend Dev   | E0001    |
+| D0002  | Backend Dev    | E0002    |
+| D0003  | Database Admin | E0003    |
+| D0004  | QA Testing     | E0001    |
+| D0005  | UI/UX Design   | E0002    |
+| D0006  | Cloud Ops      | E0003    |
+| D0007  | Data Science   | E0001    |
+| D0008  | Cybersecurity  | E0002    |
+| D0009  | Tech Support   | E0003    |
+| D0010  | R&D            | E0001    |
++--------+----------------+----------+
+￼
+
+INSERT INTO Employee (empNo, fName, lName, address, DOB, sex, position, deptNo) VALUES
+('E0001', 'Alice', 'Smith', '123 Maple St', '1980-01-10', 'F', 'Manager', 'D0001'),
+('E0002', 'Bob', 'Jones', '456 Oak St', '1982-02-20', 'M', 'Manager', 'D0002'),
+('E0003', 'Charlie', 'Brown', '789 Pine St', '1985-03-30', 'M', 'Manager', 'D0003'),
+('E0004', 'Diana', 'Prince', '111 Elm St', '1990-04-15', 'F', 'Leader', 'D0001'),
+('E0005', 'Evan', 'Wright', '222 Cedar St', '1992-05-25', 'M', 'Leader', 'D0002'),
+('E0006', 'Fiona', 'Gallagher', '333 Birch St', '1994-06-05', 'F', 'Analyst', 'D0003'),
+('E0007', 'George', 'Clark', '444 Ash St', '1995-07-12', 'M', 'Analyst', 'D0004'),
+('E0008', 'Hannah', 'Abbott', '555 Walnut St', '1996-08-22', 'F', 'Developer', 'D0001'),
+('E0009', 'Ian', 'Malcolm', '666 Cherry St', '1997-09-09', 'M', 'Developer', 'D0002'),
+('E0010', 'Julia', 'Stiles', '777 Spruce St', '1998-10-31', 'F', 'Developer', 'D0003');
+
+SELECT * FROM Employee;
+
++-------+---------+-----------+---------------+------------+-----+-----------+--------+
+| empNo | fName   | lName     | address       | DOB        | sex | position  | deptNo |
++-------+---------+-----------+---------------+------------+-----+-----------+--------+
+| E0001 | Alice   | Smith     | 123 Maple St  | 1980-01-10 | F   | Manager   | D0001  |
+| E0002 | Bob     | Jones     | 456 Oak St    | 1982-02-20 | M   | Manager   | D0002  |
+| E0003 | Charlie | Brown     | 789 Pine St   | 1985-03-30 | M   | Manager   | D0003  |
+| E0004 | Diana   | Prince    | 111 Elm St    | 1990-04-15 | F   | Leader    | D0001  |
+| E0005 | Evan    | Wright    | 222 Cedar St  | 1992-05-25 | M   | Leader    | D0002  |
+| E0006 | Fiona   | Gallagher | 333 Birch St  | 1994-06-05 | F   | Analyst   | D0003  |
+| E0007 | George  | Clark     | 444 Ash St    | 1995-07-12 | M   | Analyst   | D0004  |
+| E0008 | Hannah  | Abbott    | 555 Walnut St | 1996-08-22 | F   | Developer | D0001  |
+| E0009 | Ian     | Malcolm   | 666 Cherry St | 1997-09-09 | M   | Developer | D0002  |
+| E0010 | Julia   | Stiles    | 777 Spruce St | 1998-10-31 | F   | Developer | D0003  |
++-------+---------+-----------+---------------+------------+-----+-----------+--------+
+
+￼
+
+INSERT INTO Project (projNo, projName, deptNo) VALUES
+('P0001', 'Web Redesign', 'D0001'),
+('P0002', 'API Migration', 'D0002'),
+('P0003', 'DB Optimization', 'D0003'x),
+('P0004', 'Automated Tests', 'D0004'),
+('P0005', 'Mobile App UI', 'D0005'),
+('P0006', 'AWS Server Move', 'D0006'),
+('P0007', 'AI Chatbot', 'D0007'),
+('P0008', 'Security Audit', 'D0008'),
+('P0009', 'Helpdesk Portal', 'D0009'),
+('P0010', 'VR Prototype', 'D0010');
+
+SELECT * FROM Project;
+
++--------+-------------+--------+
+| projNo | projName    | deptNo |
++--------+-------------+--------+
+| P0001  | Web Rede... | D0001  |
+| P0002  | API Migr... | D0002  |
+| P0003  | DB Optim... | D0003  |
+| P0004  | Automate... | D0004  |
+| P0005  | Mobile A... | D0005  |
+| P0006  | AWS Serv... | D0006  |
+| P0007  | AI Chatb... | D0007  |
+| P0008  | Security... | D0008  |
+| P0009  | Helpdesk... | D0009  |
+| P0010  | VR Proto... | D0010  |
++--------+-------------+--------+
+
+￼
+
+INSERT INTO WorksOn (empNo, projNo, dateWorked, hoursWorked) VALUES
+('E0008', 'P0001', '2026-06-01', 30),
+('E0004', 'P0001', '2026-06-01', 40),
+('E0009', 'P0002', '2026-06-02', 35),
+('E0005', 'P0002', '2026-06-02', 40),
+('E0010', 'P0003', '2026-06-03', 20),
+('E0006', 'P0003', '2026-06-03', 25),
+('E0007', 'P0004', '2026-06-04', 38),
+('E0001', 'P0007', '2026-06-05', 10),
+('E0002', 'P0008', '2026-06-06', 15),
+('E0003', 'P0006', '2026-06-07', 20);
+
+SELECT * FROM WorksOn;
+
++-------+--------+------------+-------------+
+| empNo | projNo | dateWorked | hoursWorked |
++-------+--------+------------+-------------+
+| E0001 | P0007  | 2026-06-05 | 10          |
+| E0002 | P0008  | 2026-06-06 | 15          |
+| E0003 | P0006  | 2026-06-07 | 20          |
+| E0004 | P0001  | 2026-06-01 | 40          |
+| E0005 | P0002  | 2026-06-02 | 40          |
+| E0006 | P0003  | 2026-06-03 | 25          |
+| E0007 | P0004  | 2026-06-04 | 38          |
+| E0008 | P0001  | 2026-06-01 | 30          |
+| E0009 | P0002  | 2026-06-02 | 35          |
+| E0010 | P0003  | 2026-06-03 | 20          |
++-------+--------+------------+-------------+
+
+
+￼
+SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE Employee
+ADD CONSTRAINT chk_position CHECK (position IN ("Manager", "Leader", "Developer", "Analyst"));
+
+ALTER TABLE Employee
+DROP CHECK chk_position;
+
+ALTER TABLE Employee
+MODIFY position VARCHAR(25);
+
+UPDATE Employee
+SET position = "Team Leader"
+WHERE position = "Leader";
+
+UPDATE Employee
+SET position = "Software Developer"
+WHERE position = "Developer";
+
+ALTER TABLE Employee
+ADD CONSTRAINT chk_position CHECK(position IN("Manager", "Team Leader", "Software Developer", "Analyst"));
+
+CREATE VIEW pManagedByF AS
+SELECT p.projNo, p.projName
+FROM Project p
+JOIN Department d ON p.deptNo = d.deptNo
+JOIN Employee e ON e.empNo = d.mgrEmpNo
+WHERE e.sex = 'F' AND e.position = 'Manager'
+ORDER BY p.projNo;
+
+SELECT * FROM pManagedByF;
+
++--------+-----------------+
+| projNo | projName        |
++--------+-----------------+
+| P0001  | Web Redesign    |
+| P0004  | Automated Tests |
+| P0007  | AI Chatbot      |
+| P0010  | VR Prototype    |
++--------+-----------------+ 
+￼
+
+CREATE VIEW custAtributes AS
+SELECT e.empNo, e.fname, e.lName, p.projName, w.hoursWorked 
+FROM Employee e, Project p, WorksOn w
+WHERE e.empNo = w.empNo AND p.projNo = w.projNo;
+
+SELECT * FROM custAtributes;
+
++-------+---------+-----------+-----------------+-------------+
+| empNo | fname   | lName     | projName        | hoursWorked |
++-------+---------+-----------+-----------------+-------------+
+| E0001 | Alice   | Smith     | AI Chatbot      | 10          |
+| E0002 | Bob     | Jones     | Security Audit  | 15          |
+| E0003 | Charlie | Brown     | AWS Server Move | 20          |
+| E0004 | Diana   | Prince    | Web Redesign    | 40          |
+| E0005 | Evan    | Wright    | API Migration   | 40          |
+| E0006 | Fiona   | Gallagher | DB Optimization | 25          |
+| E0007 | George  | Clark     | Automated Tests | 38          |
+| E0008 | Hannah  | Abbott    | Web Redesign    | 30          |
+| E0009 | Ian     | Malcolm   | API Migration   | 35          |
+| E0010 | Julia   | Stiles    | DB Optimization | 20          |
++-------+---------+-----------+-----------------+-------------+
+￼
+
+CREATE VIEW EmpProject(empNo, projNo, totalHours) AS 
+SELECT w.empNo, w.projNo, SUM(hoursWorked) 
+FROM Employee e, Project p, WorksOn w 
+WHERE e.empNo = w.empNo AND p.projNo = w.projNo 
+GROUP BY w.empNo, w.projNo;
+
+SELECT * FROM EmpProject;
+
++-------+--------+------------+
+| empNo | projNo | totalHours |
++-------+--------+------------+
+| E0001 | P0007  | 10         |
+| E0004 | P0001  | 40         |
+| E0008 | P0001  | 30         |
+| E0002 | P0008  | 15         |
+| E0005 | P0002  | 40         |
+| E0009 | P0002  | 35         |
+| E0003 | P0006  | 20         |
+| E0006 | P0003  | 25         |
+| E0010 | P0003  | 20         |
+| E0007 | P0004  | 38         |
++-------+--------+------------+
+
+SELECT projNo FROM EmpProject WHERE projNo = 'P0007';
++--------+
+| projNo |
++--------+
+| P0007  |
++--------+
+
+SELECT COUNT(projNo) FROM EmpProject WHERE empNo = 'E0001';
++---------------+
+| COUNT(projNo) |
++---------------+
+| 1             |
++---------------+
+
+SELECT empNo, totalHours FROM EmpProject GROUP BY empNo;
+
+This provides an error, since there is no aggregate function (like SUM, AVG) being used 
+with the GROUP BY function.
+
+
+7.28
+
+In order to maintain a materialized view, each operation would need to be considered.
+If a new row is being inserted into the PART table, if partCost > 1000 and the partNo is
+not already in ExpensiveParts, the partNo would need to be inserted into the ExpensiveParts
+view.
+
+If a row is deleted, and the partCost <= 1000, there would be no change needed
+However if it had a partCost > 1000, there would need to be a check to determine if any
+other row with the same partNo has a partCost > 1000. If it happens to be so, partNo stays
+in the view, if not it would need to be deleted from the view.
+
+
